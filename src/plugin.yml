@@ -3,3 +3,6 @@ main: fr.florent59.plugin.Plugin
 version: 1.0.0
 description: Pour rejoindre une team
 author: Florent59
+commands:
+ jointeam:
+  description: Pour rejoindre une team

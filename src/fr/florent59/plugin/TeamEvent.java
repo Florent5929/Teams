@@ -17,14 +17,14 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class TeamEvent implements Listener {
-	
-	public Map<String, String> players = new HashMap<String, String>();
-	// sert à stocker celui qui invite (première String) et celui qui reçoit (deuxième String)
+
+	public static Map<String, String> players = new HashMap<String, String>();
+	// sert à stocker celui qui invite (première String) et celui qui reçoit
+	// (deuxième String)
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
@@ -44,18 +44,24 @@ public class TeamEvent implements Listener {
 
 	@EventHandler
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent e) {
-		
-		e.getPlayer().sendMessage("tata" +e.getRightClicked().toString());
 
 		if (e.getRightClicked() instanceof CraftPlayer || e.getRightClicked() instanceof Player) {
 			Player player = e.getPlayer();
-			players.put(player.getName(), e.getRightClicked().getName());
-			// on sauvegarde dans la hashmap celui qui invite et celui qui reçoit.
-			
-			ItemStack item = player.getInventory().getItemInMainHand();
-			ItemMeta meta = item.getItemMeta();
+			players.put(e.getRightClicked().getName(), player.getName());
+			// on sauvegarde dans la hashmap celui qui reçoit et celui qui
+			// invite.
 
-			if (meta.getLore().contains("houe de cupidon")) {
+			ItemStack item = player.getInventory().getItemInMainHand();
+			ItemMeta meta;
+
+			if (item.hasItemMeta()) {
+				meta = item.getItemMeta();
+			} else {
+				return;
+			}
+			
+			if (meta.hasLore() && meta.getLore().equals(Arrays.asList("Cliquez sur un joueur avec la houe de cupidon",
+					"et un amour passionné vous attendra."))) {
 
 				Inventory inv = Bukkit.createInventory(null, 27, "§8Menu des Teams");
 				int[] bytes = { 10, 14, 5, 11 };
@@ -70,6 +76,7 @@ public class TeamEvent implements Listener {
 					inv.setItem(places[i], item);
 				}
 				player.openInventory(inv);
+				e.setCancelled(true);
 
 			}
 		}
@@ -80,29 +87,27 @@ public class TeamEvent implements Listener {
 	public void onInventoryClick(InventoryClickEvent e) {
 		Player player = (Player) e.getWhoClicked();
 		Inventory inv = e.getInventory();
-	    ItemStack item = e.getCurrentItem();
-	    String[] couleurs = { "violets", "rouges", "verts", "bleus" };
-		
-		if(item != null 
-				&& inv.getName().equalsIgnoreCase("§8Menu des Teams") 
-				&& item.getType().equals(Material.WOOL) 
-				&& item.hasItemMeta() 
-				&& item.getItemMeta().hasDisplayName()){
-			
-			for(int i=0; i<couleurs.length;i++){
-				
-				if(item.getItemMeta().getDisplayName().contains(couleurs[i])){
+		ItemStack item = e.getCurrentItem();
+		String[] couleurs = { "violets", "rouges", "verts", "bleus" };
+
+		if (item != null && inv.getName().equalsIgnoreCase("§8Menu des Teams") && item.getType().equals(Material.WOOL)
+				&& item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
+
+			for (int i = 0; i < couleurs.length; i++) {
+
+				if (item.getItemMeta().getDisplayName().contains(couleurs[i])) {
 					player.closeInventory();
-					player.sendMessage("§5Vous voulez rejoindre l'équipe des " + couleurs[i] +".");
-					String info = "§e" + player.getName() + " §bt'invite à rejoindre l'équipe des §d"+couleurs[i]+"§b! §6Clique ici pour la rejoindre !";
+					player.sendMessage("§5Vous voulez rejoindre l'équipe des " + couleurs[i] + ".");
+					String info = "§e" + player.getName() + " §bt'invite à rejoindre l'équipe des §d" + couleurs[i]
+							+ "§b! §6Clique ici pour la rejoindre !";
 					TextComponent message = new TextComponent(info);
-					message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/help"));
+					message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/jointeam"));
 					Player cible = Bukkit.getPlayer(players.get(player.getName()));
 					cible.spigot().sendMessage(message);
-	                break;
+					break;
 				}
 			}
-			
+
 		}
 
 	}
