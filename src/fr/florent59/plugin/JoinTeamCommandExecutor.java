@@ -11,12 +11,19 @@ public class JoinTeamCommandExecutor implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		
-		if(sender instanceof Player){
+		if(sender instanceof Player && args.length == 1){
 			Player player = (Player) sender;
-			@SuppressWarnings("unused")
 			Player friend = Bukkit.getPlayer(TeamEvent.players.get(player.getName()));
-			Plugin.plugin().getServer().getScoreboardManager().getNewScoreboard();
-			player.sendMessage("Tu as cliqué sur le message, la commande jointeam a été lancée !");
+			Plugin.scoreboard.getTeam(args[0]).addEntry(player.getName());
+			Plugin.scoreboard.getTeam(args[0]).addEntry(friend.getName());
+			player.sendMessage("§2Vous avez été ajouté à l'équipe des " + args[0] + " ! "
+					+ "Voici la liste des membres actuels : " + 
+					Plugin.scoreboard.getTeam(args[0]).getEntries());
+			friend.sendMessage("§2Vous avez été ajouté à l'équipe des " + args[0] + " ! "
+					+ "Voici la liste des membres actuels : " + 
+					Plugin.scoreboard.getTeam(args[0]).getEntries());
+			player.setPlayerListName(TeamEvent.getPrefix(args[0])+player.getName());
+			friend.setPlayerListName(TeamEvent.getPrefix(args[0])+friend.getName());
 			
 			return true;
 		}

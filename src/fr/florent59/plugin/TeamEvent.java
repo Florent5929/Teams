@@ -25,6 +25,8 @@ public class TeamEvent implements Listener {
 	public static Map<String, String> players = new HashMap<String, String>();
 	// sert à stocker celui qui invite (première String) et celui qui reçoit
 	// (deuxième String)
+	
+	public static String[] couleurs = { "violets", "rouges", "verts", "bleus", "jaunes" };
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e) {
@@ -64,9 +66,8 @@ public class TeamEvent implements Listener {
 					"et un amour passionné vous attendra."))) {
 
 				Inventory inv = Bukkit.createInventory(null, 27, "§8Menu des Teams");
-				int[] bytes = { 10, 14, 5, 11 };
-				int[] places = { 12, 10, 14, 16 };
-				String[] couleurs = { "violets", "rouges", "verts", "bleus" };
+				int[] bytes = { 10, 14, 5, 11, 4};
+				int[] places = { 12, 10, 14, 16, 4};
 
 				for (int i = 0; i < couleurs.length; i++) {
 					item = new ItemStack(Material.WOOL, 1, (byte) bytes[i]);
@@ -88,7 +89,6 @@ public class TeamEvent implements Listener {
 		Player player = (Player) e.getWhoClicked();
 		Inventory inv = e.getInventory();
 		ItemStack item = e.getCurrentItem();
-		String[] couleurs = { "violets", "rouges", "verts", "bleus" };
 
 		if (item != null && inv.getName().equalsIgnoreCase("§8Menu des Teams") && item.getType().equals(Material.WOOL)
 				&& item.hasItemMeta() && item.getItemMeta().hasDisplayName()) {
@@ -97,12 +97,17 @@ public class TeamEvent implements Listener {
 
 				if (item.getItemMeta().getDisplayName().contains(couleurs[i])) {
 					player.closeInventory();
-					player.sendMessage("§5Vous voulez rejoindre l'équipe des " + couleurs[i] + ".");
-					String info = "§e" + player.getName() + " §bt'invite à rejoindre l'équipe des §d" + couleurs[i]
+					player.sendMessage(getPrefix(couleurs[i])+"Vous voulez rejoindre l'équipe des " + couleurs[i] + ".");
+					String info = "§e" + player.getName() + " §bt'invite à rejoindre l'équipe des " + getPrefix(couleurs[i])+ couleurs[i]
 							+ "§b! §6Clique ici pour la rejoindre !";
 					TextComponent message = new TextComponent(info);
-					message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/jointeam"));
-					Player cible = Bukkit.getPlayer(players.get(player.getName()));
+					message.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/jointeam " + couleurs[i]));
+					Player cible;
+					try{
+					cible = Bukkit.getPlayer(players.get(player.getName()));
+					} catch(IllegalArgumentException exp){
+						continue;
+					}
 					cible.spigot().sendMessage(message);
 					break;
 				}
@@ -110,6 +115,23 @@ public class TeamEvent implements Listener {
 
 		}
 
+	}
+	
+	public static String getPrefix(String color){
+		switch (color) {
+		case "violets":
+			return "§5";
+		case "rouges":
+			return "§4";
+		case "verts":
+			return "§2";
+		case "bleus":
+			return "§1";
+		case "jaunes":
+			return "§e";
+		default:
+			return "";
+		}
 	}
 
 }
