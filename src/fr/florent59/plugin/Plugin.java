@@ -14,6 +14,7 @@ public class Plugin extends JavaPlugin {
 		PluginManager pm = this.getServer().getPluginManager();
 		pm.registerEvents(new TeamEvent(), this);
 		this.getCommand("jointeam").setExecutor(new JoinTeamCommandExecutor());
+		this.getCommand("houe").setExecutor(new HoueCommandExecutor());
 		initScoreboard();
 	}
 

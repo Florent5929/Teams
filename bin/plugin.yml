@@ -6,3 +6,5 @@ author: Florent59
 commands:
  jointeam:
   description: Pour rejoindre une team
+ houe:
+  description: Pour ajouter une houe

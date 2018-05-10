@@ -23,7 +23,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class TeamEvent implements Listener {
 
 	public static Map<String, String> players = new HashMap<String, String>();
-	// sert à stocker celui qui invite (première String) et celui qui reçoit
+	// sert à stocker celui qui reçoit (première String) et celui qui invite
 	// (deuxième String)
 	
 	public static String[] couleurs = { "violets", "rouges", "verts", "bleus", "jaunes" };
@@ -40,8 +40,9 @@ public class TeamEvent implements Listener {
 		customM.addEnchant(Enchantment.KNOCKBACK, 1, true);
 		customM.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		customhoe.setItemMeta(customM);
-		player.getInventory().setItem(8, customhoe);
-		player.updateInventory();
+		//player.getInventory().setItem(8, customhoe);
+		//player.updateInventory();
+		player.getWorld().dropItem(player.getLocation(), customhoe);
 	}
 
 	@EventHandler
